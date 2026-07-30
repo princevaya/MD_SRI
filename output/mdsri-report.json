@@ -1,0 +1,162 @@
+{
+  "project": "IEEE Research MD-SRI Analysis",
+  "environment": "production",
+  "timestamp": "2026-07-30T16:24:08.8224187+05:30",
+  "sonar_report": {
+    "tool_name": "SonarQube",
+    "category": "SAST",
+    "counts": {
+      "critical": 1,
+      "high": 1,
+      "medium": 1,
+      "low": 2
+    },
+    "score": 7.5,
+    "findings": [
+      {
+        "id": "sq-rule-01",
+        "title": "javascript:S5122",
+        "description": "Enable CORS only for trusted domains",
+        "severity": "CRITICAL",
+        "component": "src/auth.js",
+        "source": "VULNERABILITY"
+      },
+      {
+        "id": "sq-rule-02",
+        "title": "javascript:S2077",
+        "description": "Use parameterized queries to prevent SQL Injection",
+        "severity": "HIGH",
+        "component": "src/db.js",
+        "source": "VULNERABILITY"
+      },
+      {
+        "id": "sq-rule-03",
+        "title": "javascript:S2259",
+        "description": "Null pointer dereference possibility",
+        "severity": "MEDIUM",
+        "component": "src/controllers/user.js",
+        "source": "BUG"
+      },
+      {
+        "id": "sq-rule-04",
+        "title": "javascript:S1488",
+        "description": "Immediately return this expression",
+        "severity": "LOW",
+        "component": "src/routes.js",
+        "source": "CODE_SMELL"
+      },
+      {
+        "id": "sq-rule-05",
+        "title": "javascript:S1135",
+        "description": "TODO: add validation logic here",
+        "severity": "LOW",
+        "component": "src/app.js",
+        "source": "CODE_SMELL"
+      }
+    ]
+  },
+  "dependency_report": {
+    "tool_name": "OWASP Dependency Check",
+    "category": "SCA",
+    "counts": {
+      "critical": 1,
+      "high": 1,
+      "medium": 1,
+      "low": 1
+    },
+    "score": 7.25,
+    "findings": [
+      {
+        "id": "CVE-2022-22965",
+        "title": "CVE-2022-22965",
+        "description": "Spring4Shell Remote Code Execution vulnerability",
+        "severity": "CRITICAL",
+        "component": "spring-core-5.3.8.jar",
+        "source": "Dependency"
+      },
+      {
+        "id": "CVE-2022-22950",
+        "title": "CVE-2022-22950",
+        "description": "Spring Framework expression injection vulnerability",
+        "severity": "MEDIUM",
+        "component": "spring-core-5.3.8.jar",
+        "source": "Dependency"
+      },
+      {
+        "id": "CVE-2021-44228",
+        "title": "CVE-2021-44228",
+        "description": "Log4Shell JNDI LDAP remote code execution",
+        "severity": "HIGH",
+        "component": "log4j-core-2.14.1.jar",
+        "source": "Dependency"
+      },
+      {
+        "id": "CVE-2021-37136",
+        "title": "CVE-2021-37136",
+        "description": "Denial of Service vulnerability in Netty/Jackson",
+        "severity": "LOW",
+        "component": "jackson-databind-2.12.3.jar",
+        "source": "Dependency"
+      }
+    ]
+  },
+  "trivy_report": {
+    "tool_name": "Trivy",
+    "category": "Container",
+    "counts": {
+      "critical": 1,
+      "high": 1,
+      "medium": 1,
+      "low": 1
+    },
+    "score": 7.25,
+    "findings": [
+      {
+        "id": "CVE-2022-0778",
+        "title": "openssl: Infinite loop in BN_mod_sqrt()",
+        "description": "An issue was discovered in OpenSSL before 1.1.1n where custom curves could trigger an infinite loop during validation.",
+        "severity": "CRITICAL",
+        "component": "node:16-alpine (alpine 3.14.2)",
+        "source": "openssl"
+      },
+      {
+        "id": "CVE-2022-2068",
+        "title": "openssl: execution of arbitrary command via c_rehash script",
+        "description": "In OpenSSL a vulnerability was discovered where c_rehash script does not properly sanitize inputs, allowing commands execution.",
+        "severity": "HIGH",
+        "component": "node:16-alpine (alpine 3.14.2)",
+        "source": "openssl"
+      },
+      {
+        "id": "CVE-2021-3580",
+        "title": "nettle: RSA decryption crash",
+        "description": "A flaw was found in nettle where RSA decryption crashes when processing specific crafted ciphertext.",
+        "severity": "MEDIUM",
+        "component": "node:16-alpine (alpine 3.14.2)",
+        "source": "nettle"
+      },
+      {
+        "id": "CVE-2021-3634",
+        "title": "libssh2: Out-of-bounds read in SSH protocol handler",
+        "description": "An out-of-bounds read vulnerability exists in libssh2 when handling SSH handshakes.",
+        "severity": "LOW",
+        "component": "node:16-alpine (alpine 3.14.2)",
+        "source": "libssh2"
+      }
+    ]
+  },
+  "overall_score": 7.325,
+  "threshold": 8,
+  "decision": "BLOCK",
+  "reason": "Hard veto triggered: 3 Critical vulnerability/vulnerabilities found.",
+  "calculation_details": {
+    "sast_score": 7.5,
+    "sca_score": 7.25,
+    "container_score": 7.25,
+    "sast_weighted": 2.25,
+    "sca_weighted": 2.175,
+    "container_weighted": 2.9000000000000004,
+    "formula": "MD-SRI = (SAST Score [7.50] * Weight [0.30]) + (SCA Score [7.25] * Weight [0.30]) + (Container Score [7.25] * Weight [0.40]) = 7.3250"
+  },
+  "veto_triggered": true
+}

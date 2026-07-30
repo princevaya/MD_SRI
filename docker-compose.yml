@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  mdsri-engine:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mdsri-engine-service
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./output:/app/output
+      - ./reports:/app/reports
+    environment:
+      - TZ=UTC
+    restart: unless-stopped

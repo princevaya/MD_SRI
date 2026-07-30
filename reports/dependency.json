@@ -1,0 +1,39 @@
+{
+  "dependencies": [
+    {
+      "fileName": "spring-core-5.3.8.jar",
+      "vulnerabilities": [
+        {
+          "name": "CVE-2022-22965",
+          "severity": "CRITICAL",
+          "description": "Spring4Shell Remote Code Execution vulnerability"
+        },
+        {
+          "name": "CVE-2022-22950",
+          "severity": "MEDIUM",
+          "description": "Spring Framework expression injection vulnerability"
+        }
+      ]
+    },
+    {
+      "fileName": "log4j-core-2.14.1.jar",
+      "vulnerabilities": [
+        {
+          "name": "CVE-2021-44228",
+          "severity": "HIGH",
+          "description": "Log4Shell JNDI LDAP remote code execution"
+        }
+      ]
+    },
+    {
+      "fileName": "jackson-databind-2.12.3.jar",
+      "vulnerabilities": [
+        {
+          "name": "CVE-2021-37136",
+          "severity": "LOW",
+          "description": "Denial of Service vulnerability in Netty/Jackson"
+        }
+      ]
+    }
+  ]
+}

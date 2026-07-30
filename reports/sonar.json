@@ -1,0 +1,44 @@
+{
+  "issues": [
+    {
+      "key": "sq-rule-01",
+      "rule": "javascript:S5122",
+      "severity": "BLOCKER",
+      "component": "src/auth.js",
+      "message": "Enable CORS only for trusted domains",
+      "type": "VULNERABILITY"
+    },
+    {
+      "key": "sq-rule-02",
+      "rule": "javascript:S2077",
+      "severity": "CRITICAL",
+      "component": "src/db.js",
+      "message": "Use parameterized queries to prevent SQL Injection",
+      "type": "VULNERABILITY"
+    },
+    {
+      "key": "sq-rule-03",
+      "rule": "javascript:S2259",
+      "severity": "MAJOR",
+      "component": "src/controllers/user.js",
+      "message": "Null pointer dereference possibility",
+      "type": "BUG"
+    },
+    {
+      "key": "sq-rule-04",
+      "rule": "javascript:S1488",
+      "severity": "MINOR",
+      "component": "src/routes.js",
+      "message": "Immediately return this expression",
+      "type": "CODE_SMELL"
+    },
+    {
+      "key": "sq-rule-05",
+      "rule": "javascript:S1135",
+      "severity": "INFO",
+      "component": "src/app.js",
+      "message": "TODO: add validation logic here",
+      "type": "CODE_SMELL"
+    }
+  ]
+}

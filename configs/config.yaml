@@ -1,0 +1,31 @@
+# MD-SRI Engine Configuration
+
+# Severity Weights used to compute individual ToolScores
+severity_weights:
+  critical: 4.0
+  high: 2.0
+  medium: 1.0
+  low: 0.25
+
+# Category Weights used to compute overall MD-SRI
+# Must sum up to 1.0 (100%)
+category_weights:
+  sast: 0.30       # e.g., SonarQube
+  sca: 0.30        # e.g., OWASP Dependency Check
+  container: 0.40  # e.g., Trivy
+
+# Environment Thresholds (Maximum allowable MD-SRI score)
+environments:
+  development:
+    threshold: 20.0
+  testing:
+    threshold: 15.0
+  staging:
+    threshold: 12.0
+  production:
+    threshold: 8.0
+
+# Veto Policies (Immediate BLOCK override rules)
+veto_policies:
+  veto_on_critical: true
+  veto_on_high: false

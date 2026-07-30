@@ -1,0 +1,48 @@
+{
+  "SchemaVersion": 2,
+  "Results": [
+    {
+      "Target": "node:16-alpine (alpine 3.14.2)",
+      "Class": "os-packages",
+      "Type": "alpine",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2022-0778",
+          "PkgName": "openssl",
+          "InstalledVersion": "1.1.1l-r0",
+          "FixedVersion": "1.1.1n-r0",
+          "Severity": "CRITICAL",
+          "Title": "openssl: Infinite loop in BN_mod_sqrt()",
+          "Description": "An issue was discovered in OpenSSL before 1.1.1n where custom curves could trigger an infinite loop during validation."
+        },
+        {
+          "VulnerabilityID": "CVE-2022-2068",
+          "PkgName": "openssl",
+          "InstalledVersion": "1.1.1l-r0",
+          "FixedVersion": "1.1.1o-r0",
+          "Severity": "HIGH",
+          "Title": "openssl: execution of arbitrary command via c_rehash script",
+          "Description": "In OpenSSL a vulnerability was discovered where c_rehash script does not properly sanitize inputs, allowing commands execution."
+        },
+        {
+          "VulnerabilityID": "CVE-2021-3580",
+          "PkgName": "nettle",
+          "InstalledVersion": "3.7.3-r0",
+          "FixedVersion": "3.7.3-r1",
+          "Severity": "MEDIUM",
+          "Title": "nettle: RSA decryption crash",
+          "Description": "A flaw was found in nettle where RSA decryption crashes when processing specific crafted ciphertext."
+        },
+        {
+          "VulnerabilityID": "CVE-2021-3634",
+          "PkgName": "libssh2",
+          "InstalledVersion": "1.9.0-r1",
+          "FixedVersion": "1.10.0-r0",
+          "Severity": "LOW",
+          "Title": "libssh2: Out-of-bounds read in SSH protocol handler",
+          "Description": "An out-of-bounds read vulnerability exists in libssh2 when handling SSH handshakes."
+        }
+      ]
+    }
+  ]
+}
