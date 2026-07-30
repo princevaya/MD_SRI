@@ -85,6 +85,7 @@ func StartServer(port int, configPath string) error {
 	app := fiber.New(fiber.Config{
 		Views:       engine,
 		ViewsLayout: "",
+		BodyLimit:   100 * 1024 * 1024,
 	})
 
 	// Health Check endpoint
