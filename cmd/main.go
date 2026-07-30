@@ -29,7 +29,7 @@ func main() {
 	switch subcommand {
 	case "server":
 		serverCmd := flag.NewFlagSet("server", flag.ExitOnError)
-		port := serverCmd.Int("port", 8080, "Port for the REST API server")
+		port := serverCmd.Int("port", 9091, "Port for the REST API server")
 		configPath := serverCmd.String("config", "configs/config.yaml", "Path to config file")
 		_ = serverCmd.Parse(os.Args[2:])
 
@@ -139,7 +139,7 @@ func printUsage() {
 	fmt.Println("  server")
 	fmt.Println("    Start REST API server and HTML Dashboard")
 	fmt.Println("    Options:")
-	fmt.Println("      --port <int>         (default: 8080)")
+	fmt.Println("      --port <int>         (default: 9091)")
 	fmt.Println("      --config <path>      (default: configs/config.yaml)")
 	fmt.Println()
 	fmt.Println("  evaluate")

@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
     container_name: mdsri-engine-service
     ports:
-      - "8080:8080"
+      - "9091:9091"
     volumes:
       - ./output:/app/output
       - ./reports:/app/reports

@@ -29,3 +29,6 @@ environments:
 veto_policies:
   veto_on_critical: true
   veto_on_high: false
+
+# Slack Integration (Optional, can also be set via SLACK_WEBHOOK_URL env var)
+slack_webhook_url: ""

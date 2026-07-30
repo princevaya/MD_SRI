@@ -33,7 +33,7 @@ COPY --from=builder /app/reports /app/reports
 # Setup output folders
 RUN mkdir -p /app/output && chmod 777 /app/output
 
-EXPOSE 8080
+EXPOSE 9091
 
 ENTRYPOINT ["/app/mdsri"]
-CMD ["server", "--port", "8080", "--config", "configs/config.yaml"]
+CMD ["server", "--port", "9091", "--config", "configs/config.yaml"]

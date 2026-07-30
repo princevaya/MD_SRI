@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<analysis xmlns="https://jeremylong.github.io/DependencyCheck/dependency-analysis.2.5.xsd">
+    <scanInfo>
+        <engineVersion>7.1.1</engineVersion>
+    </scanInfo>
+    <dependencies>
+        <dependency>
+            <fileName>spring-core-5.3.8.jar</fileName>
+            <filePath>c:\path\to\spring-core-5.3.8.jar</filePath>
+            <packagePath>org.springframework:spring-core:5.3.8</packagePath>
+            <vulnerabilities>
+                <vulnerability source="NVD">
+                    <name>CVE-2022-22965</name>
+                    <severity>CRITICAL</severity>
+                    <description>Spring4Shell Remote Code Execution vulnerability</description>
+                </vulnerability>
+                <vulnerability source="NVD">
+                    <name>CVE-2022-22950</name>
+                    <severity>MEDIUM</severity>
+                    <description>Spring Framework expression injection vulnerability</description>
+                </vulnerability>
+            </vulnerabilities>
+        </dependency>
+        <dependency>
+            <fileName>log4j-core-2.14.1.jar</fileName>
+            <filePath>c:\path\to\log4j-core-2.14.1.jar</filePath>
+            <packagePath>org.apache.logging.log4j:log4j-core:2.14.1</packagePath>
+            <vulnerabilities>
+                <vulnerability source="NVD">
+                    <name>CVE-2021-44228</name>
+                    <severity>HIGH</severity>
+                    <description>Log4Shell JNDI LDAP remote code execution</description>
+                </vulnerability>
+            </vulnerabilities>
+        </dependency>
+        <dependency>
+            <fileName>jackson-databind-2.12.3.jar</fileName>
+            <filePath>c:\path\to\jackson-databind-2.12.3.jar</filePath>
+            <vulnerabilities>
+                <vulnerability source="NVD">
+                    <name>CVE-2021-37136</name>
+                    <severity>LOW</severity>
+                    <description>Denial of Service vulnerability in Netty/Jackson</description>
+                </vulnerability>
+                <vulnerability source="NVD">
+                    <name>CVE-9999-9999</name>
+                    <severity>UNKNOWN</severity>
+                    <description>Test Unknown Severity vulnerability mapping to Low</description>
+                </vulnerability>
+            </vulnerabilities>
+        </dependency>
+    </dependencies>
+</analysis>

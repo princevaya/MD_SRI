@@ -130,9 +130,9 @@ This allows CI pipelines to block deployment steps directly.
 ## 🌐 REST API & Dashboard
 
 ### Start Web Server
-Launch the REST server on port `8080` (default):
+Launch the REST server on port `9091` (default):
 ```bash
-go run cmd/main.go server --port 8080
+go run cmd/main.go server --port 9091
 ```
 
 ### API Endpoint: Evaluator Webhook
@@ -160,7 +160,7 @@ go run cmd/main.go server --port 8080
 ### HTML Web Dashboard
 Open the interactive, dark-themed metrics dashboard in your web browser:
 ```
-http://localhost:8080/dashboard
+http://localhost:9091/dashboard
 ```
 
 It visualizes the overall risk metrics, category contributions, raw severity distributions, and shows a search/detail table of all vulnerabilities compiled across the tools.
@@ -173,5 +173,5 @@ Build and spin up the engine container locally using docker-compose:
 ```bash
 docker-compose up --build -d
 ```
-The application will start, serving the Web API and dashboard on `http://localhost:8080`.
+The application will start, serving the Web API and dashboard on `http://localhost:9091`.
 Generated reports are synchronized back to the host machine in the `./output` directory.

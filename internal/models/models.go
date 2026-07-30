@@ -67,6 +67,7 @@ type Config struct {
 	CategoryWeights CategoryWeights      `yaml:"category_weights"`
 	Environments    map[string]EnvPolicy `yaml:"environments"`
 	VetoPolicies    VetoPolicies         `yaml:"veto_policies"`
+	SlackWebhookURL string               `yaml:"slack_webhook_url"`
 }
 
 // CalculationDetails holds step-by-step scoring logs
@@ -83,6 +84,7 @@ type CalculationDetails struct {
 // EvaluationResult represents the final MD-SRI engine run report
 type EvaluationResult struct {
 	Project            string             `json:"project"`
+	Build              string             `json:"build"` // CI/CD build identifier
 	Environment        string             `json:"environment"`
 	Timestamp          time.Time          `json:"timestamp"`
 	SonarReport        ToolReport         `json:"sonar_report"`
