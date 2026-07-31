@@ -12,12 +12,14 @@ import (
 func LoadEnv() {
 	file, err := os.Open(".env")
 	if err != nil {
-		// If the file doesn't exist, we skip silently
+		log.Info().Msg(".env file not found in current directory. Skipping .env loading.")
 		return
 	}
 	defer file.Close()
 
+	log.Info().Msg("Loading environment variables from .env file...")
 	scanner := bufio.NewScanner(file)
+	loadedCount := 0
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
 		// Skip empty lines and comments
@@ -41,6 +43,9 @@ func LoadEnv() {
 
 		if err := os.Setenv(key, value); err != nil {
 			log.Error().Err(err).Msgf("Failed to set env variable %s", key)
+		} else {
+			loadedCount++
 		}
 	}
+	log.Info().Msgf("Successfully loaded %d environment variables from .env", loadedCount)
 }
