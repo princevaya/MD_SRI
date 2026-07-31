@@ -1,0 +1,64 @@
+{
+  "project": "Test Graceful Slack",
+  "build": "test-build-1",
+  "environment": "production",
+  "timestamp": "2026-07-31T19:03:04.7684016+05:30",
+  "sonar_report": {
+    "tool_name": "SonarQube",
+    "category": "SAST",
+    "counts": {
+      "critical": 0,
+      "high": 0,
+      "medium": 0,
+      "low": 0
+    },
+    "score": 0
+  },
+  "dependency_report": {
+    "tool_name": "OWASP Dependency Check",
+    "category": "SCA",
+    "counts": {
+      "critical": 0,
+      "high": 0,
+      "medium": 0,
+      "low": 0
+    },
+    "score": 0
+  },
+  "trivy_report": {
+    "tool_name": "Trivy",
+    "category": "Container",
+    "counts": {
+      "critical": 0,
+      "high": 0,
+      "medium": 0,
+      "low": 0
+    },
+    "score": 0
+  },
+  "overall_score": 0,
+  "threshold": 8,
+  "decision": "PASS",
+  "reason": "Overall MD-SRI score (0.00) is within production threshold (8.00).",
+  "calculation_details": {
+    "sast_score": 0,
+    "sca_score": 0,
+    "container_score": 0,
+    "sast_weighted": 0,
+    "sca_weighted": 0,
+    "container_weighted": 0,
+    "formula": "MD-SRI = (SAST Score [0.00] * Weight [0.30]) + (SCA Score [0.00] * Weight [0.30]) + (Container Score [0.00] * Weight [0.40]) = 0.0000"
+  },
+  "veto_triggered": false,
+  "metrics": {
+    "sast_score": 0,
+    "sca_score": 0,
+    "container_score": 0,
+    "counts": {
+      "critical": 0,
+      "high": 0,
+      "medium": 0,
+      "low": 0
+    }
+  }
+}

@@ -15,7 +15,7 @@ import (
 
 	"mdsri-engine/internal/models"
 	"mdsri-engine/internal/parser"
-	"mdsri-engine/internal/policy"
+	"mdsri-engine/internal/evaluator"
 	"mdsri-engine/internal/utils"
 )
 
@@ -34,14 +34,7 @@ type EvaluateRequest struct {
 	Trivy       string `json:"trivy"`
 }
 
-// EvaluateAPIResponse represents the response matching the requirement specification
-type EvaluateAPIResponse struct {
-	Decision     string  `json:"decision"`
-	OverallScore float64 `json:"overall_score"`
-	Threshold    float64 `json:"threshold"`
-	Reason       string  `json:"reason"`
-}
-
+// init sets up defaults for latest result
 func init() {
 	// Initialize default result so dashboard displays clean message initially
 	latestResult = &models.EvaluationResult{
@@ -110,7 +103,7 @@ func StartServer(port int, configPath string) error {
 		contentType := c.Get(fiber.HeaderContentType)
 
 		if strings.HasPrefix(contentType, fiber.MIMEApplicationJSON) {
-			// Fallback: Parse from JSON body containing local file paths
+			// Local file path loading is disabled in JSON requests for security (Fix Path Traversal).
 			var req EvaluateRequest
 			if err := c.BodyParser(&req); err != nil {
 				log.Error().Err(err).Msg("Failed to parse request body")
@@ -120,29 +113,11 @@ func StartServer(port int, configPath string) error {
 			envName = req.Environment
 			buildID = req.Build
 
-			if req.Sonar != "" {
-				var err error
-				sonarRep, err = parser.ParseSonarQube(req.Sonar)
-				if err != nil {
-					log.Error().Err(err).Msg("Failed to parse local SonarQube file")
-					return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": fmt.Sprintf("SonarQube file error: %v", err)})
-				}
-			}
-			if req.Dependency != "" {
-				var err error
-				depRep, err = parser.ParseDependencyCheck(req.Dependency)
-				if err != nil {
-					log.Error().Err(err).Msg("Failed to parse local Dependency Check file")
-					return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": fmt.Sprintf("Dependency Check file error: %v", err)})
-				}
-			}
-			if req.Trivy != "" {
-				var err error
-				trivyRep, err = parser.ParseTrivy(req.Trivy)
-				if err != nil {
-					log.Error().Err(err).Msg("Failed to parse local Trivy file")
-					return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": fmt.Sprintf("Trivy file error: %v", err)})
-				}
+			if req.Sonar != "" || req.Dependency != "" || req.Trivy != "" {
+				log.Error().Msg("Blocked attempt to parse local files via JSON API request")
+				return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+					"error": "Parsing local file paths via JSON request is disabled for security. Please upload reports using multipart/form-data.",
+				})
 			}
 		} else {
 			// Production pipeline: Parse multipart form uploads (curl -F)
@@ -159,7 +134,11 @@ func StartServer(port int, configPath string) error {
 					return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": fmt.Sprintf("Failed to open sonar file: %v", err)})
 				}
 				defer file.Close()
-				data, _ := io.ReadAll(file)
+				data, err := io.ReadAll(file)
+				if err != nil {
+					log.Error().Err(err).Msg("Failed to read uploaded sonar report")
+					return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": fmt.Sprintf("Failed to read sonar file: %v", err)})
+				}
 				sonarRep, err = parser.ParseSonarQubeBytes(data)
 				if err != nil {
 					log.Error().Err(err).Msg("SonarQube upload parse error")
@@ -176,7 +155,11 @@ func StartServer(port int, configPath string) error {
 					return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": fmt.Sprintf("Failed to open dependency file: %v", err)})
 				}
 				defer file.Close()
-				data, _ := io.ReadAll(file)
+				data, err := io.ReadAll(file)
+				if err != nil {
+					log.Error().Err(err).Msg("Failed to read uploaded dependency report")
+					return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": fmt.Sprintf("Failed to read dependency file: %v", err)})
+				}
 				depRep, err = parser.ParseDependencyCheckBytes(data)
 				if err != nil {
 					log.Error().Err(err).Msg("Dependency Check upload parse error")
@@ -193,7 +176,11 @@ func StartServer(port int, configPath string) error {
 					return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": fmt.Sprintf("Failed to open trivy file: %v", err)})
 				}
 				defer file.Close()
-				data, _ := io.ReadAll(file)
+				data, err := io.ReadAll(file)
+				if err != nil {
+					log.Error().Err(err).Msg("Failed to read uploaded trivy report")
+					return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": fmt.Sprintf("Failed to read trivy file: %v", err)})
+				}
 				trivyRep, err = parser.ParseTrivyBytes(data)
 				if err != nil {
 					log.Error().Err(err).Msg("Trivy upload parse error")
@@ -228,7 +215,8 @@ func StartServer(port int, configPath string) error {
 			Msg("Starting policy evaluation")
 
 		// Evaluate policy
-		result, err := policy.EvaluatePolicy(project, envName, sonarRep, depRep, trivyRep, cfg)
+		// Evaluate policy
+		result, err := evaluator.EvaluatePolicy(project, envName, sonarRep, depRep, trivyRep, cfg)
 		if err != nil {
 			log.Error().Err(err).Msg("Failed to evaluate policy")
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
@@ -247,20 +235,30 @@ func StartServer(port int, configPath string) error {
 			log.Error().Err(err).Msg("Failed to save JSON report to output/")
 		}
 
-		// Dispatch Slack Webhook notification in background
-		go utils.SendSlackNotification(cfg.SlackWebhookURL, result)
-
 		log.Info().
 			Str("decision", result.Decision).
 			Float64("overall_score", result.OverallScore).
 			Msg("Evaluation completed successfully")
 
 		// Return REST API Response payload matching request specification
-		resp := EvaluateAPIResponse{
+		resp := models.EvaluationResponse{
+			Project:      result.Project,
+			Build:        result.Build,
+			Environment:  result.Environment,
 			Decision:     result.Decision,
 			OverallScore: result.OverallScore,
 			Threshold:    result.Threshold,
 			Reason:       result.Reason,
+			Metrics:      result.Metrics,
+		}
+
+		slackEnabled := cfg.SlackEnabled
+		if envSlackEnabled := os.Getenv("SLACK_ENABLED"); envSlackEnabled != "" {
+			slackEnabled = (envSlackEnabled == "true" || envSlackEnabled == "1")
+		}
+
+		if slackEnabled {
+			go utils.SendSlackNotification(cfg.SlackWebhookURL, resp)
 		}
 
 		return c.JSON(resp)

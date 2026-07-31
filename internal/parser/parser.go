@@ -8,6 +8,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/rs/zerolog/log"
 	"mdsri-engine/internal/models"
 )
 
@@ -54,6 +55,7 @@ func ParseSonarQubeBytes(data []byte) (*models.ToolReport, error) {
 			sev = models.SeverityLow
 			report.Counts.Low++
 		default:
+			log.Warn().Str("severity", issue.Severity).Msg("Unknown SonarQube severity, defaulting to SeverityLow")
 			sev = models.SeverityLow
 			report.Counts.Low++
 		}
@@ -163,6 +165,7 @@ func ParseDependencyCheckJSONBytes(data []byte) (*models.ToolReport, error) {
 				sev = models.SeverityLow
 				report.Counts.Low++
 			default:
+				log.Warn().Str("severity", vuln.Severity).Msg("Unknown Dependency Check JSON severity, defaulting to SeverityLow")
 				sev = models.SeverityLow
 				report.Counts.Low++
 			}
@@ -216,6 +219,7 @@ func ParseDependencyCheckXMLBytes(data []byte) (*models.ToolReport, error) {
 				sev = models.SeverityLow
 				report.Counts.Low++
 			default:
+				log.Warn().Str("severity", vuln.Severity).Msg("Unknown Dependency Check XML severity, defaulting to SeverityLow")
 				sev = models.SeverityLow
 				report.Counts.Low++
 			}
@@ -309,6 +313,7 @@ func ParseTrivyBytes(data []byte) (*models.ToolReport, error) {
 				sev = models.SeverityLow
 				report.Counts.Low++
 			default:
+				log.Warn().Str("severity", vuln.Severity).Msg("Unknown Trivy severity, defaulting to SeverityLow")
 				sev = models.SeverityLow
 				report.Counts.Low++
 			}

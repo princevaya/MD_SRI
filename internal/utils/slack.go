@@ -13,10 +13,17 @@ import (
 )
 
 // SendSlackNotification sends a formatted Slack webhook message using standard Attachments.
-func SendSlackNotification(webhookURL string, result *models.EvaluationResult) {
-	// If slack webhook URL is empty, fall back to SLACK_WEBHOOK_URL env variable
-	if webhookURL == "" {
-		webhookURL = os.Getenv("SLACK_WEBHOOK_URL")
+func SendSlackNotification(webhookURL string, res models.EvaluationResponse) {
+	// Wrap in a defer recover block to catch panics and prevent crashing the server
+	defer func() {
+		if r := recover(); r != nil {
+			log.Error().Interface("panic", r).Msg("Recovered from panic in SendSlackNotification")
+		}
+	}()
+
+	// Environment variable SLACK_WEBHOOK_URL takes precedence and overrides config settings
+	if envWebhook := os.Getenv("SLACK_WEBHOOK_URL"); envWebhook != "" {
+		webhookURL = envWebhook
 	}
 
 	// If still empty, skip silently
@@ -25,15 +32,15 @@ func SendSlackNotification(webhookURL string, result *models.EvaluationResult) {
 		return
 	}
 
-	// Select theme color depending on decision (PASS = Green, BLOCK = Red)
-	color := "#10b981" // emerald green
+	// Select theme color depending on decision (PASS = #36a64f, BLOCK = #FF0000)
+	color := "#36a64f"
 	statusEmoji := "✅"
-	if result.Decision == "BLOCK" {
-		color = "#ef4444" // red
+	if res.Decision == "BLOCK" {
+		color = "#FF0000"
 		statusEmoji = "❌"
 	}
 
-	titleText := fmt.Sprintf("%s MD-SRI Decision: %s for %s", statusEmoji, result.Decision, result.Project)
+	titleText := fmt.Sprintf("%s MD-SRI Decision: %s for %s", statusEmoji, res.Decision, res.Project)
 
 	// Build Slack payload structure with fields
 	payload := map[string]interface{}{
@@ -46,32 +53,37 @@ func SendSlackNotification(webhookURL string, result *models.EvaluationResult) {
 				"fields": []map[string]interface{}{
 					{
 						"title": "Project",
-						"value": result.Project,
+						"value": res.Project,
 						"short": true,
 					},
 					{
 						"title": "Build ID",
-						"value": result.Build,
+						"value": res.Build,
 						"short": true,
 					},
 					{
 						"title": "Environment",
-						"value": result.Environment,
+						"value": res.Environment,
 						"short": true,
 					},
 					{
-						"title": "Overall MD-SRI Score",
-						"value": fmt.Sprintf("%.3f", result.OverallScore),
-						"short": true,
-					},
-					{
-						"title": "Risk Threshold",
-						"value": fmt.Sprintf("%.2f", result.Threshold),
+						"title": "Overall Risk Score vs. Threshold",
+						"value": fmt.Sprintf("%.3f / %.2f", res.OverallScore, res.Threshold),
 						"short": true,
 					},
 					{
 						"title": "Policy Reason",
-						"value": result.Reason,
+						"value": res.Reason,
+						"short": false,
+					},
+					{
+						"title": "Score Breakdown",
+						"value": fmt.Sprintf("  ↳ SAST (SonarQube): %.2f\n  ↳ SCA (Dependency-Check): %.2f\n  ↳ Container (Trivy): %.2f", res.Metrics.SASTScore, res.Metrics.SCAScore, res.Metrics.ContainerScore),
+						"short": false,
+					},
+					{
+						"title": "Severity Breakdown",
+						"value": fmt.Sprintf("🔴 %d Critical | 🟠 %d High | 🟡 %d Medium | ⚪ %d Low", res.Metrics.Counts.Critical, res.Metrics.Counts.High, res.Metrics.Counts.Medium, res.Metrics.Counts.Low),
 						"short": false,
 					},
 				},

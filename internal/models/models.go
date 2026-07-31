@@ -68,6 +68,7 @@ type Config struct {
 	Environments    map[string]EnvPolicy `yaml:"environments"`
 	VetoPolicies    VetoPolicies         `yaml:"veto_policies"`
 	SlackWebhookURL string               `yaml:"slack_webhook_url"`
+	SlackEnabled    bool                 `yaml:"slack_enabled"`
 }
 
 // CalculationDetails holds step-by-step scoring logs
@@ -96,4 +97,5 @@ type EvaluationResult struct {
 	Reason             string             `json:"reason"`
 	CalculationDetails CalculationDetails `json:"calculation_details"`
 	VetoTriggered      bool               `json:"veto_triggered"`
+	Metrics            MetricsSummary     `json:"metrics"`
 }

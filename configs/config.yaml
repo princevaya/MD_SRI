@@ -32,3 +32,5 @@ veto_policies:
 
 # Slack Integration (Optional, can also be set via SLACK_WEBHOOK_URL env var)
 slack_webhook_url: ""
+slack_enabled: true
+

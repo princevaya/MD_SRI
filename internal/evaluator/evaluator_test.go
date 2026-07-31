@@ -1,4 +1,4 @@
-package policy
+package evaluator
 
 import (
 	"testing"
@@ -69,6 +69,29 @@ func TestEvaluatePolicy_Pass(t *testing.T) {
 	if result.VetoTriggered {
 		t.Errorf("Expected veto not triggered, but got veto triggered")
 	}
+
+	// Verify MetricsSummary is populated correctly
+	if result.Metrics.SASTScore != 2.0 {
+		t.Errorf("Expected SASTScore 2.0, got %f", result.Metrics.SASTScore)
+	}
+	if result.Metrics.SCAScore != 2.0 {
+		t.Errorf("Expected SCAScore 2.0, got %f", result.Metrics.SCAScore)
+	}
+	if result.Metrics.ContainerScore != 1.0 {
+		t.Errorf("Expected ContainerScore 1.0, got %f", result.Metrics.ContainerScore)
+	}
+	if result.Metrics.Counts.Critical != 0 {
+		t.Errorf("Expected 0 critical, got %d", result.Metrics.Counts.Critical)
+	}
+	if result.Metrics.Counts.High != 1 {
+		t.Errorf("Expected 1 high, got %d", result.Metrics.Counts.High)
+	}
+	if result.Metrics.Counts.Medium != 2 {
+		t.Errorf("Expected 2 medium, got %d", result.Metrics.Counts.Medium)
+	}
+	if result.Metrics.Counts.Low != 4 {
+		t.Errorf("Expected 4 low, got %d", result.Metrics.Counts.Low)
+	}
 }
 
 func TestEvaluatePolicy_BlockThreshold(t *testing.T) {
@@ -119,6 +142,14 @@ func TestEvaluatePolicy_BlockThreshold(t *testing.T) {
 	if result.VetoTriggered {
 		t.Errorf("Expected veto not triggered, but got veto triggered")
 	}
+
+	// Verify MetricsSummary is populated correctly
+	if result.Metrics.SASTScore != 8.0 {
+		t.Errorf("Expected SASTScore 8.0, got %f", result.Metrics.SASTScore)
+	}
+	if result.Metrics.Counts.High != 4 {
+		t.Errorf("Expected 4 high, got %d", result.Metrics.Counts.High)
+	}
 }
 
 func TestEvaluatePolicy_BlockVeto(t *testing.T) {
@@ -166,5 +197,10 @@ func TestEvaluatePolicy_BlockVeto(t *testing.T) {
 
 	if !result.VetoTriggered {
 		t.Errorf("Expected veto triggered to be true, got false")
+	}
+
+	// Verify MetricsSummary is populated correctly
+	if result.Metrics.Counts.Critical != 1 {
+		t.Errorf("Expected 1 critical, got %d", result.Metrics.Counts.Critical)
 	}
 }

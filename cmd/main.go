@@ -5,13 +5,14 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strconv"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
 	"mdsri-engine/internal/models"
 	"mdsri-engine/internal/parser"
-	"mdsri-engine/internal/policy"
+	"mdsri-engine/internal/evaluator"
 	"mdsri-engine/internal/server"
 	"mdsri-engine/internal/utils"
 )
@@ -19,6 +20,9 @@ import (
 func main() {
 	// Configure zerolog for pretty console layout on standard error
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+
+	// Load variables from .env file if it exists
+	utils.LoadEnv()
 
 	if len(os.Args) < 2 {
 		printUsage()
@@ -29,7 +33,13 @@ func main() {
 	switch subcommand {
 	case "server":
 		serverCmd := flag.NewFlagSet("server", flag.ExitOnError)
-		port := serverCmd.Int("port", 9091, "Port for the REST API server")
+		defaultPort := 9091
+		if envPort := os.Getenv("PORT"); envPort != "" {
+			if p, err := strconv.Atoi(envPort); err == nil {
+				defaultPort = p
+			}
+		}
+		port := serverCmd.Int("port", defaultPort, "Port for the REST API server")
 		configPath := serverCmd.String("config", "configs/config.yaml", "Path to config file")
 		_ = serverCmd.Parse(os.Args[2:])
 
@@ -87,7 +97,7 @@ func main() {
 		}
 
 		// Evaluate policy
-		result, err := policy.EvaluatePolicy(*project, *env, sonarRep, depRep, trivyRep, cfg)
+		result, err := evaluator.EvaluatePolicy(*project, *env, sonarRep, depRep, trivyRep, cfg)
 		if err != nil {
 			log.Fatal().Err(err).Msg("Failed to evaluate policy")
 		}

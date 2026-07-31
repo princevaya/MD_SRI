@@ -1,4 +1,4 @@
-package policy
+package evaluator
 
 import (
 	"fmt"
@@ -28,7 +28,13 @@ func EvaluatePolicy(
 	// 1. Calculate scores
 	overallScore, calcDetails := calculator.CalculateMDSRI(sonar, dependency, trivy, config)
 
-	// 2. Setup initial result structure
+	// 2. Aggregate vulnerability counts
+	criticalCount := sonar.Counts.Critical + dependency.Counts.Critical + trivy.Counts.Critical
+	highCount := sonar.Counts.High + dependency.Counts.High + trivy.Counts.High
+	mediumCount := sonar.Counts.Medium + dependency.Counts.Medium + trivy.Counts.Medium
+	lowCount := sonar.Counts.Low + dependency.Counts.Low + trivy.Counts.Low
+
+	// 3. Setup result structure with MetricsSummary
 	result := &models.EvaluationResult{
 		Project:            project,
 		Environment:        envName,
@@ -39,12 +45,20 @@ func EvaluatePolicy(
 		OverallScore:       overallScore,
 		Threshold:          envPolicy.Threshold,
 		CalculationDetails: calcDetails,
+		Metrics: models.MetricsSummary{
+			SASTScore:      calcDetails.SASTScore,
+			SCAScore:       calcDetails.SCAScore,
+			ContainerScore: calcDetails.ContainerScore,
+			Counts: models.Counts{
+				Critical: criticalCount,
+				High:     highCount,
+				Medium:   mediumCount,
+				Low:      lowCount,
+			},
+		},
 	}
 
-	// 3. Evaluate Hard Veto Rules
-	criticalCount := sonar.Counts.Critical + dependency.Counts.Critical + trivy.Counts.Critical
-	highCount := sonar.Counts.High + dependency.Counts.High + trivy.Counts.High
-
+	// 4. Evaluate Hard Veto Rules
 	if config.VetoPolicies.VetoOnCritical && criticalCount > 0 {
 		result.Decision = "BLOCK"
 		result.Reason = fmt.Sprintf("Hard veto triggered: %d Critical vulnerability/vulnerabilities found.", criticalCount)
@@ -59,7 +73,7 @@ func EvaluatePolicy(
 		return result, nil
 	}
 
-	// 4. Compare score against threshold
+	// 5. Compare score against threshold
 	if overallScore > envPolicy.Threshold {
 		result.Decision = "BLOCK"
 		result.Reason = fmt.Sprintf("Overall MD-SRI score (%.2f) exceeded %s threshold (%.2f).", overallScore, envName, envPolicy.Threshold)
